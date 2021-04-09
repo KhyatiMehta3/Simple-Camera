@@ -2,6 +2,7 @@ package com.simplemobiletools.camera.activities
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.hardware.SensorManager
 import android.net.Uri
 import android.os.Bundle
@@ -9,16 +10,20 @@ import android.os.Handler
 import android.provider.MediaStore
 import android.view.*
 import android.widget.RelativeLayout
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.library.BuildConfig
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
-import com.simplemobiletools.camera.BuildConfig
+import com.simplemobiletools.camera.databinding.ActivityMainBinding
 import com.simplemobiletools.camera.R
 import com.simplemobiletools.camera.extensions.config
 import com.simplemobiletools.camera.helpers.*
 import com.simplemobiletools.camera.implementations.MyCameraImpl
 import com.simplemobiletools.camera.interfaces.MyPreview
+import com.simplemobiletools.camera.viewmodels.CameraViewModel
 import com.simplemobiletools.camera.views.CameraPreview
 import com.simplemobiletools.camera.views.FocusCircleView
 import com.simplemobiletools.commons.dialogs.NewAppsIconsDialog
@@ -45,6 +50,7 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener {
     private var mIsHardwareShutterHandled = false
     private var mCurrVideoRecTimer = 0
     var mLastHandledOrientation = 0
+    private lateinit var cameraViewModel : CameraViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or
@@ -57,6 +63,7 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener {
         appLaunched(BuildConfig.APPLICATION_ID)
         requestWindowFeature(Window.FEATURE_NO_TITLE)
 
+        setupBinding()
         initVariables()
         tryInitCamera()
         supportActionBar?.hide()
@@ -150,9 +157,9 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener {
     }
 
     private fun hideIntentButtons() {
-        toggle_photo_video.beGone()
-        settings.beGone()
-        last_photo_video_preview.beGone()
+//        toggle_photo_video.beGone()
+//        settings.beGone()
+        last_photo_video_preview.beVisible()
     }
 
     private fun tryInitCamera() {
@@ -194,8 +201,15 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener {
         }
     }
 
+    private fun setupBinding(){
+        cameraViewModel = ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(application)).get(CameraViewModel::class.java)
+        val binding: ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        binding.cameraVm = cameraViewModel
+        binding.lifecycleOwner  = this
+    }
+
     private fun initializeCamera() {
-        setContentView(R.layout.activity_main)
+//        setContentView(R.layout.activity_main)
         initButtons()
 
         (btn_holder.layoutParams as RelativeLayout.LayoutParams).setMargins(0, 0, 0, (navigationBarHeight + resources.getDimension(R.dimen.activity_margin)).toInt())
@@ -226,9 +240,9 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener {
         last_photo_video_preview.setOnClickListener { showLastMediaPreview() }
         toggle_flash.setOnClickListener { toggleFlash() }
         shutter.setOnClickListener { shutterPressed() }
-        settings.setOnClickListener { launchSettings() }
-        toggle_photo_video.setOnClickListener { handleTogglePhotoVideo() }
-        change_resolution.setOnClickListener { mPreview?.showChangeResolutionDialog() }
+//        settings.setOnClickListener { launchSettings() }
+//        toggle_photo_video.setOnClickListener { handleTogglePhotoVideo() }
+//        change_resolution.setOnClickListener { mPreview?.showChangeResolutionDialog() }
     }
 
     private fun toggleCamera() {
@@ -282,6 +296,14 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener {
         }
     }
 
+    //Display last captured image here
+    fun showLastCapturedImage(){
+        runOnUiThread{
+            //TODO: use view model to update previous picture here
+
+        }
+    }
+
     fun toggleBottomButtons(hide: Boolean) {
         runOnUiThread {
             val alpha = if (hide) 0f else 1f
@@ -295,14 +317,14 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener {
         }
     }
 
-    private fun launchSettings() {
+    /*private fun launchSettings() {
         if (settings.alpha == 1f) {
             val intent = Intent(applicationContext, SettingsActivity::class.java)
             startActivity(intent)
         } else {
             fadeInButtons()
         }
-    }
+    }*/
 
     private fun handleTogglePhotoVideo() {
         handlePermission(PERMISSION_RECORD_AUDIO) {
@@ -344,7 +366,7 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener {
     }
 
     private fun initPhotoMode() {
-        toggle_photo_video.setImageResource(R.drawable.ic_video_vector)
+//        toggle_photo_video.setImageResource(R.drawable.ic_video_vector)
         shutter.setImageResource(R.drawable.ic_shutter_vector)
         mPreview?.initPhotoMode()
         setupPreviewImage(true)
@@ -361,7 +383,7 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener {
     }
 
     private fun initVideoButtons() {
-        toggle_photo_video.setImageResource(R.drawable.ic_camera_vector)
+//        toggle_photo_video.setImageResource(R.drawable.ic_camera_vector)
         showToggleCameraIfNeeded()
         shutter.setImageResource(R.drawable.ic_video_rec)
         setupPreviewImage(false)
@@ -379,15 +401,19 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener {
 
         runOnUiThread {
             if (!isDestroyed) {
-                val options = RequestOptions()
-                    .centerCrop()
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+//                val options = RequestOptions()
+//                    .centerCrop()
+//                    .diskCacheStrategy(DiskCacheStrategy.NONE)
 
-                Glide.with(this)
-                    .load(mPreviewUri)
-                    .apply(options)
-                    .transition(DrawableTransitionOptions.withCrossFade())
-                    .into(last_photo_video_preview)
+//                Glide.with(this)
+//                    .load(mPreviewUri)
+//                    .apply(options)
+//                    .transition(DrawableTransitionOptions.withCrossFade())
+//                    .into(last_photo_video_preview)
+                try{
+                    cameraViewModel.setLastCapturedImage(this,BitmapFactory.decodeFile(mPreviewUri?.toString()))
+                }catch (e : Exception){e.printStackTrace()}
+
             }
         }
     }
@@ -401,17 +427,17 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener {
     }
 
     private fun fadeOutButtons() {
-        fadeAnim(settings, .5f)
+        /*fadeAnim(settings, .5f)
         fadeAnim(toggle_photo_video, .0f)
-        fadeAnim(change_resolution, .0f)
-        fadeAnim(last_photo_video_preview, .0f)
+        fadeAnim(change_resolution, .0f)*/
+//        fadeAnim(last_photo_video_preview, .0f)
     }
 
     private fun fadeInButtons() {
-        fadeAnim(settings, 1f)
+        /*fadeAnim(settings, 1f)
         fadeAnim(toggle_photo_video, 1f)
-        fadeAnim(change_resolution, 1f)
-        fadeAnim(last_photo_video_preview, 1f)
+        fadeAnim(change_resolution, 1f)*/
+//        fadeAnim(last_photo_video_preview, 1f)
         scheduleFadeOut()
     }
 
@@ -489,7 +515,7 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener {
     }
 
     private fun animateViews(degrees: Int) {
-        val views = arrayOf<View>(toggle_camera, toggle_flash, toggle_photo_video, change_resolution, shutter, settings, last_photo_video_preview)
+        val views = arrayOf<View>(toggle_camera, toggle_flash, shutter)
         for (view in views) {
             rotate(view, degrees)
         }

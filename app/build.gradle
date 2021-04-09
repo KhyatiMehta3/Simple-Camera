@@ -12,6 +12,11 @@ android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
 
+    dataBinding {
+        enabled = true
+    }
+
+
     defaultConfig {
         applicationId "com.simplemobiletools.camera"
         minSdkVersion 21
@@ -58,4 +63,9 @@ android {
 
 dependencies {
     implementation 'com.simplemobiletools:commons:5.28.3'
+    implementation "androidx.core:core-ktx:+"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+repositories {
+    mavenCentral()
 }

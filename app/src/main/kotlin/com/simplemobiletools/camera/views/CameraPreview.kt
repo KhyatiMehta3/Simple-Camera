@@ -590,6 +590,8 @@ class CameraPreview : ViewGroup, TextureView.SurfaceTextureListener, MyPreview {
 
             val captureCallback = object : CameraCaptureSession.CaptureCallback() {
                 override fun onCaptureCompleted(session: CameraCaptureSession, request: CaptureRequest, result: TotalCaptureResult) {
+                    //This triggers to  show the last captured image on the camera view
+                    mActivity.showLastCapturedImage();
                     unlockFocus()
                     mActivity.toggleBottomButtons(false)
                 }
